@@ -142,7 +142,7 @@ class ConstitutionDb:
             self.client.close()
             logger.info("Database connection closed.")
 
-def setup_jamb_db():
+def setup_nigerian_constitution_db():
     mongo_url = os.getenv("MONGO_URI", "mongodb://mongodb:27017")
     db_name = os.getenv("MONGO_DB_NAME", "nigerian_constitution_db")
     
@@ -176,9 +176,9 @@ def setup_jamb_db():
     return db
 
 if __name__ == "__main__":
-    jamb_db_instance = setup_jamb_db()
+    nigerian_constitution_db_instance = setup_nigerian_constitution_db()
 
-    if jamb_db_instance:
+    if nigerian_constitution_db_instance:
         print("Nigeria Constitution Database initialized and ready.")
     else:
         print("Nigeria Constitution Database initialization failed.")
