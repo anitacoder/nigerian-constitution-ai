@@ -14,3 +14,4 @@ pypdf
 cryptography>=40.0.0
 google-generativeai
 requests
+GitPython

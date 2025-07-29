@@ -18,16 +18,21 @@ services:
     ports:
       - "8000:8000"
     environment:
-      MONGO_URI: "mongodb://mongodb:27017/"
+      MONGO_URI: "mongodb://mongodb:27017"
       MONGO_DB_NAME: "nigerian_constitution_db"
+      DATA_COLLECTION_NAME: "documents"
+    env_file: 
+      - ./.env
     volumes:
       - ./backend:/app
+    working_dir: /app
+    command: ["/bin/bash", "-c", "./run.sh"]     
     depends_on:
       mongodb:
         condition: service_healthy
     networks:
       - constitution_network
-    restart: unless-stopped
+    restart: on-failure
 
   mongodb:
     image: mongo:latest
@@ -56,7 +61,7 @@ services:
       ME_CONFIG_MONGODB_PORT: 27017
       ME_CONFIG_BASICAUTH_USERNAME: admin
       ME_CONFIG_BASICAUTH_PASSWORD: pass
-      ME_CONFIG_MONGODB_URL: mongodb://mongodb:27017/
+      ME_CONFIG_MONGODB_URL: mongodb://mongodb:27017
     depends_on:
       mongodb:
         condition: service_healthy

@@ -2,6 +2,10 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends git && \
+    rm -rf /var/lib/apt/lists/*
+
 COPY requirement.txt .
 
 RUN pip install --no-cache-dir \
@@ -17,7 +21,8 @@ RUN pip install --no-cache-dir \
     beautifulsoup4 \
     pypdf \
     cryptography>=40.0.0 \
-    google-generativeai
+    google-generativeai \
+    GitPython
 
     RUN pip install --no-cache-dir --extra-index-url https://download.pytorch.org/whl/cpu torch==2.6.0
     RUN pip install --no-cache-dir faiss-cpu==1.8.0
