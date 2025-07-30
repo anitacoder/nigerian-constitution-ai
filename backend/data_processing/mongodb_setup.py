@@ -20,7 +20,6 @@ class ConstitutionDb:
         self.connect()
 
     def connect(self, max_retries=5, retry_delay=5):
-        """Connect to MongoDB with retry logic"""
         for attempt in range(max_retries):
             try:
                 logger.info(f"Attempting to connect to MongoDB at: {self.mongo_url}")
@@ -55,7 +54,6 @@ class ConstitutionDb:
                 return False
 
     def get_collection(self, collection_name: str):
-        """Get a collection from the database"""
         if self.db is None:
             if not self.connect():
                 logger.error("No database connection")
@@ -69,7 +67,6 @@ class ConstitutionDb:
         return collection
 
     def close_connection(self):
-        """Close the database connection"""
         if self.client:
             self.client.close()
             logger.info("Database connection closed.")

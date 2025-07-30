@@ -17,12 +17,8 @@ services:
     container_name: constitution_backend_container
     ports:
       - "8000:8000"
-    environment:
-      MONGO_URI: "mongodb://mongodb:27017"
-      MONGO_DB_NAME: "nigerian_constitution_db"
-      DATA_COLLECTION_NAME: "documents"
-    env_file: 
-      - ./.env
+    env_file:
+      - ./backend/.env
     volumes:
       - ./backend:/app
     working_dir: /app
