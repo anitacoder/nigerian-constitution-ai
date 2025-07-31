@@ -18,7 +18,7 @@ class NigerianConstitutionRAG:
         self.faiss_index_path = os.getenv("FAISS_INDEX_PATH", "data/faiss_index_constitution")
         self.model_type = model_type
         self.model_name = os.getenv("OLLAMA_MODEL_NAME")
-        self.max_context_length = 3500
+        self.max_context_length = 2048
         
         self.embedding_model = HuggingFaceEmbeddings(model_name='sentence-transformers/all-MiniLM-L6-v2')
         print("Embedding model loaded.")
@@ -53,7 +53,7 @@ class NigerianConstitutionRAG:
         
         try:
             faiss_vector_store = FAISS.load_local(
-                folder_path=self.faiss_index_path,
+                folder_path="data/faiss_index_constitution",              
                 embeddings=self.embedding_model,
                 allow_dangerous_deserialization=True
             )
@@ -89,7 +89,7 @@ class NigerianConstitutionRAG:
             
             chunk_text = f"{source_citation}\nContent: {chunk_content}\n\n"
             
-            if context_length + len(chunk_text) > self.max_content_length:
+            if context_length + len(chunk_text) > self.max_context_length:
                 break
             
             context_parts.append(chunk_text)
@@ -103,8 +103,8 @@ class NigerianConstitutionRAG:
         
         print(f"Generating answer using {self.model_type} ({self.model_name})...")
         prompt = self.prompt_template.format(context=context, question=question)
-        
         answer = self.llm.invoke(prompt)
+
         
         response = {
             "question": question,
@@ -118,7 +118,8 @@ class NigerianConstitutionRAG:
         return response
     
     def ask_question(self, question: str) -> Dict:
-        
         response = self.generate_answer(question)
-        
         return response
+      
+    def get_retriever(self):
+        return self.vector_store.as_retriever()

@@ -154,6 +154,8 @@ class ConstitutionDataCollector:
                         "author": metadata.get("author")
                     }
                 }
+
+                document_data['document_id'] = hashlib.md5(document_data['url'].encode('utf-8')).hexdigest()
                 if self.store_documents(document_data):
                     repo_processed_count += 1
 

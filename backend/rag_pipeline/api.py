@@ -22,8 +22,8 @@ allowed_cors_origins = [
 ]
 
 app = FastAPI(
-    title="Nigerian Laws AI API",
-    description="AI-powered assistant for Nigerian laws questions",
+    title="Nigerian Constitution AI API",
+    description="AI-powered assistant for Nigerian constitution questions",
     version="1.0.0"
 )
 
@@ -58,26 +58,17 @@ async def ask_question_stream(request: QuestionRequest):
         raise HTTPException(status_code=503, detail="Service Unavailable: RAG system not initialized.")
 
     question = request.question
-    top_k = 5
 
     async def generate_chunks():
         try:
             start_time = time.time()
-            relevant_info = rag_system.get_retriever().get_relevant_documents(question)
-            context_parts = []
-            context_length = 0
-
-            for doc in relevant_info:
-                doc_title = doc.metadata.get("title", "Nigerian Constitution")
-                chunk_content = doc.page_content
-                source_citation_text = f"Source: {doc_title}"
-                chunk_text = f"{source_citation_text}\nContent: {chunk_content}\n\n"
-                context_parts.append(chunk_text)
-                context_length += len(chunk_text)
-
-            context = "".join(context_parts)
-
-            if not context:
+            full_response = rag_system.generate_answer(question)
+            
+            prompt = full_response.get("answer")
+            relevant_info_count = full_response.get("relevant_chunks_found", 0)
+            context_chunks_used = full_response.get("context_chunks_used", 0)
+            
+            if relevant_info_count == 0:
                 logger.warning("No relevant context found or context was empty after processing.")
                 no_context_message = {
                     "type": "info",
@@ -87,14 +78,11 @@ async def ask_question_stream(request: QuestionRequest):
                 yield f"data: {json.dumps(no_context_message)}\n\n"
 
             logger.info(f"Generating answer using model for: '{question[:50]}...'")
-            prompt = rag_system.llm.invoke(
-                rag_system.generate_answer(question)
-            ) 
 
             initial_metadata = {
                 "type": "metadata",
-                "relevant_chunks_found": len(relevant_info),
-                "context_chunks_used": len(context_parts),
+                "relevant_chunks_found": relevant_info_count,
+                "context_chunks_used": context_chunks_used,
                 "model": "NigerianConstitutionRAG"
             }
             yield f"data: {json.dumps(initial_metadata)}\n\n"
