@@ -28,7 +28,10 @@ class NigerianConstitutionRAG:
         self.vector_store = self.load_vector_store()
         
         self.prompt_template = PromptTemplate(
-            template="""You
+            template="""You are an expert on Nigerian constitution. Use the following context to answer the question accurately and informatively.
+            If the context doesn't contain enough information, state clearly that you cannot answer based on the provided information.
+            Always provide specific dates, names, and events when available.
+            Keep your answer informative but concise.
             Context:
             {context}
 
