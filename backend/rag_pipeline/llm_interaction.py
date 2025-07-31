@@ -7,7 +7,6 @@ from langchain_ollama import OllamaLLM
 from langchain_community.vectorstores import FAISS
 from langchain.prompts import PromptTemplate
 from langchain_core.documents import Document
-from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 from dotenv import load_dotenv
 load_dotenv()
