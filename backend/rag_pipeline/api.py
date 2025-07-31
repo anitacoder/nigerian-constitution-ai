@@ -69,7 +69,7 @@ async def ask_question_stream(request: QuestionRequest):
             context_chunks_used = full_response.get("context_chunks_used", 0)
             
             if relevant_info_count == 0:
-                logger.warning("No relevant context found or context was empty after processing.")
+                logger.warning("No relevant context found after processing.")
                 no_context_message = {
                     "type": "info",
                     "content": "No highly relevant information found in the knowledge base for this question. "
