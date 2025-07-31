@@ -99,7 +99,7 @@ async def ask_question_stream(request: QuestionRequest):
             yield f"data: {json.dumps(final_message)}\n\n"
 
         except Exception as e:
-            logger.error(f"Error during streaming response generation for question '{question[:50]}...': {e}", exc_info=True)
+            logger.error(f"Error during streaming response for question '{question[:50]}...': {e}", exc_info=True)
             error_message = {
                 "type": "error",
                 "error": str(e),
