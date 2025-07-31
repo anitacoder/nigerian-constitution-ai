@@ -6,7 +6,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def check_data(collection):
+def check_data(collection_name):
     try:
         mongo_uri = os.getenv("MONGO_URI")
         mongo_db_name = os.getenv("MONGO_DB_NAME")
@@ -30,4 +30,4 @@ if doc_count == 0:
     exit(1)
 else:
     logger.info(f"Collection '{COLLECTION_NAME}' contains {doc_count} documents. Skipping data collection.")
-    exit(0) 
+    exit(0)

@@ -16,6 +16,7 @@ RUN pip install --no-cache-dir \
     langchain-community \
     langchain \
     langchain-huggingface \
+    langchain-ollama \
     numpy==1.26.4 \
     fastapi \
     beautifulsoup4 \

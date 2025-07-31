@@ -12,12 +12,13 @@ from .mongodb_setup import ConstitutionDb
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-load_dotenv() 
+load_dotenv()
+
 
 MONGO_URL = os.getenv("MONGO_URI")
 MONGO_DB_NAME = os.getenv("MONGO_DB_NAME")
 MONGO_COLLECTION_NAME = os.getenv("DATA_COLLECTION_NAME", "documents")
-GITHUB_PERSONAL_ACCESS_TOKEN = os.getenv("GITHUB_PERSONAL_ACCESS_TOKEN") 
+GITHUB_PERSONAL_ACCESS_TOKEN = os.getenv("GITHUB_PERSONAL_ACCESS_TOKEN")
 GITHUB_REPO_URL: str = "https://github.com/mykeels/nigerian-constitution"
 
 logger.info(f"Environment variables loaded:")
@@ -46,7 +47,6 @@ def parse_github_repo_url(url: str) -> Optional[Tuple[str, str]]:
     except Exception as e:
         logger.error(f"Error parsing GitHub repo URL {url}: {e}")
         return None
-
 
 class ConstitutionDataCollector:
     def __init__(self):

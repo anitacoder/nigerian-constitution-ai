@@ -2,7 +2,8 @@ set -e
 
 echo "Waiting for MongoDB to be ready..."
 
-echo "MongoDB is ready!" 
+echo "MongoDB is ready!"
+
 
 python_check_script_path="/tmp/check_data_for_run_sh.py"
 cat <<EOF > "${python_check_script_path}"
@@ -15,9 +16,9 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-MONGO_URI = os.getenv("MONGO_URI", "mongodb://mongodb:27017/")
-MONGO_DB_NAME = os.getenv("MONGO_DB_NAME", "nigerian_constitution_db")
-DATA_COLLECTION_NAME = os.getenv("DATA_COLLECTION_NAME", "documents")
+MONGO_URI = os.getenv("MONGO_URI")
+MONGO_DB_NAME = os.getenv("MONGO_DB_NAME")
+DATA_COLLECTION_NAME = os.getenv("MONGO_COLLECTION_NAME", "documents")
 
 try:
     client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=20000)
@@ -49,4 +50,15 @@ else
     echo "Data collection pipeline finished."
 fi
 
-rm "${python_check_script_path}"
+rm "${python_check_script_path}" 
+
+if [ ! -f "/app/data/faiss_index/index.faiss" ]; then
+    echo "FAISS index not found. Running preprocessing pipeline..."
+    cd /app/rag_pipeline
+    python document_preprocessing.py
+    cd /app
+else
+    echo "FAISS index exists. Skipping preprocessing."
+fi
+
+exec uvicorn rag_pipeline.api:app --host 0.0.0.0 --port 8000 --workers 1

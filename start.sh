@@ -1,1 +1,0 @@
-echo "Running Nigeria Constitution Data Collection and Retrieval Pipeline..."
