@@ -3,6 +3,9 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+__init__.py
+.python-version
+
 # C extensions
 *.so
 

@@ -2,3 +2,8 @@
 .env
 backend/.env/
 data/
+__pycache__/
+__init__.py
+.python-version
+data/ollama/
+check_data.py
