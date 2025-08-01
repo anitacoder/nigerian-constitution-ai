@@ -1,1 +1,1 @@
-# nigerian_constitution_ai
+# nigerian-constitution-ai
