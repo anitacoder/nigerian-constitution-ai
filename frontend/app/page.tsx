@@ -1,85 +1,116 @@
-import Image from "next/image";
+'use client';
+import { log } from "console";
+import { useState, useRef, useEffect } from "react";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-          </li>
-        </ol>
+  const [question, setQuestion] = useState('');
+  const [chat, setChat] = useState<{ role: 'user' | 'ai', content: string }[]>([]);
+  const [loading, setLoading] = useState(false);
+  const chatEndRef = useRef<HTMLDivElement>(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  const scrollToBottom = () => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [chat]);
+
+  const handleSearch = async () => {
+    if (!question.trim()) return;
+
+    const currentQuestion = question;
+    setQuestion('');
+    setLoading(true);
+    setChat((prev) => [ ...prev, { role: 'user', content: currentQuestion },{ role: 'ai', content: 'Generating......' },
+    ]);
+    try {
+      const response = await fetch("http://localhost:8000/ask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: currentQuestion }),
+      });
+
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder("utf-8");
+      let aiAnswer = '';
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const text = decoder.decode(value);
+          const parts = text.split("\n\n").filter(Boolean);
+
+          for (const part of parts) {
+            if (!part.startsWith("data: ")) continue;
+            const payload = JSON.parse(part.replace("data: ", ""));
+
+            switch(payload.type) {
+              case 'metadata':
+                console.log("Metedata", payload);
+                break;
+              case 'chunk':
+              aiAnswer += payload.content;
+              setChat(prev => {
+                const last = prev[prev.length - 1];
+                if (last?.role === 'ai') {
+                  return [...prev.slice(0, -1), { role: 'ai', content: aiAnswer }];
+                } else {
+                  return [...prev, { role: 'ai', content: aiAnswer }];
+                }
+              });
+              break;
+              case 'end':
+                console.log("Streaming ended", payload);
+                break;
+              case 'error':
+                setChat(prev => [...prev, { role: 'ai', content: `Error: ${payload.error}` }]);
+                break;
+            }
+          }
+        }
+      }
+    } catch (err) {
+      setChat(prev => [...prev, { role: 'ai', content: 'An error occurred. Please try again.' }]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="main-container">
+      <h1 className="first-heading">Hello, there!</h1>
+      <h2 className="second-heading">What would you like to know about Nigeria?</h2>
+
+      <div className="chat-board">
+        {chat.map((msg, idx) => (
+          <div
+            key={idx}
+            className={`chat-bubble ${msg.role === 'user' ? 'chat-user' : 'chat-ai'}`}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            {msg.content}
+          </div>
+        ))}
+        <div ref={chatEndRef} />
+      </div>
+
+      <div className="search-bar-section">
+        <div className="search-box-container">
+          <input
+            type="text"
+            className="search-input"
+            placeholder="Ask a question about the Nigerian Constitution..."
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+          />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-      </footer>
+        <button className="search-button" onClick={handleSearch}>Send</button>
+      </div>
+    
+
     </div>
   );
 }

@@ -54,11 +54,16 @@ rm "${python_check_script_path}"
 
 if [ ! -f "/app/data/faiss_index/index.faiss" ]; then
     echo "FAISS index not found. Running preprocessing pipeline..."
-    cd /app/rag_pipeline
+    cd rag_pipeline
     python document_preprocessing.py
-    cd /app
+    cd ..
 else
     echo "FAISS index exists. Skipping preprocessing."
 fi
 
-exec uvicorn rag_pipeline.api:app --host 0.0.0.0 --port 8000 --workers 1
+exec uvicorn rag_pipeline.api:app --host 0.0.0.0 --port 8000 --reload
+
+echo "Starting frontend..."
+cd frontend
+npm install
+npm run dev
