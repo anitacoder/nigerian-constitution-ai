@@ -7,6 +7,7 @@ import time
 from datetime import datetime
 import json
 import logging
+import asyncio 
 
 from .llm_interaction import NigerianConstitutionRAG
 
@@ -62,50 +63,22 @@ async def ask_question_stream(request: QuestionRequest):
     async def generate_chunks():
         try:
             start_time = time.time()
-            full_response = rag_system.generate_answer(question)
-            
-            prompt = full_response.get("answer")
-            relevant_info_count = full_response.get("relevant_chunks_found", 0)
-            context_chunks_used = full_response.get("context_chunks_used", 0)
-            
-            if relevant_info_count == 0:
-                logger.warning("No relevant context found after processing.")
-                no_context_message = {
-                    "type": "info",
-                    "content": "No highly relevant information found in the knowledge base for this question. "
-                               "Attempting to generate an answer with limited context."
-                }
-                yield f"data: {json.dumps(no_context_message)}\n\n"
 
-            logger.info(f"Generating answer using model for: '{question[:50]}...'")
+            logger.info(f"Streaming answer for question: '{question[:50]}...'")
 
-            initial_metadata = {
-                "type": "metadata",
-                "relevant_chunks_found": relevant_info_count,
-                "context_chunks_used": context_chunks_used,
-                "model": "NigerianConstitutionRAG"
-            }
-            yield f"data: {json.dumps(initial_metadata)}\n\n"
-
-            chunk_data = {"type": "chunk", "content": prompt}
-            yield f"data: {json.dumps(chunk_data)}\n\n"
-
-            final_message = {
-                "type": "end",
-                "full_answer": prompt,
-                "timestamp": datetime.now().isoformat(),
-                "generation_time": f"{time.time() - start_time:.2f} seconds"
-            }
-            yield f"data: {json.dumps(final_message)}\n\n"
+            for chunk in rag_system.stream_answer(question):
+                yield f"data: {json.dumps(chunk)}\n\n"
+                await asyncio.sleep(0.02) 
+            logger.info(f"Streaming completed in {time.time() - start_time:.2f} seconds.")
 
         except Exception as e:
-            logger.error(f"Error during streaming response for question '{question[:50]}...': {e}", exc_info=True)
-            error_message = {
+            logger.error(f"Error during streaming: {e}", exc_info=True)
+            error_chunk = {
                 "type": "error",
                 "error": str(e),
                 "timestamp": datetime.now().isoformat()
             }
-            yield f"data: {json.dumps(error_message)}\n\n"
+            yield f"data: {json.dumps(error_chunk)}\n\n"
 
     return StreamingResponse(
         generate_chunks(),
@@ -113,5 +86,6 @@ async def ask_question_stream(request: QuestionRequest):
         headers={
             "Cache-Control": "no-cache",
             "Connection": "keep-alive",
+             "Transfer-Encoding": "chunked"
         }
     )
