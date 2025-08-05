@@ -1,9 +1,9 @@
 set -e
 
+cd "$(dirname "$0")"
+
 echo "Waiting for MongoDB to be ready..."
-
 echo "MongoDB is ready!"
-
 
 python_check_script_path="/tmp/check_data_for_run_sh.py"
 cat <<EOF > "${python_check_script_path}"
@@ -50,9 +50,9 @@ else
     echo "Data collection pipeline finished."
 fi
 
-rm "${python_check_script_path}" 
+rm "${python_check_script_path}"
 
-if [ ! -f "/app/data/faiss_index/index.faiss" ]; then
+if [ ! -f "./data/faiss_index_constitution/index.faiss" ]; then
     echo "FAISS index not found. Running preprocessing pipeline..."
     cd rag_pipeline
     python document_preprocessing.py
@@ -61,9 +61,10 @@ else
     echo "FAISS index exists. Skipping preprocessing."
 fi
 
-exec uvicorn rag_pipeline.api:app --host 0.0.0.0 --port 8000 --reload
+echo "Starting backend..."
+uvicorn rag_pipeline.api:app --host 0.0.0.0 --port 8000 --reload &
 
 echo "Starting frontend..."
-cd frontend
+cd ../frontend
 npm install
 npm run dev
