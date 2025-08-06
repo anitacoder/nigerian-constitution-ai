@@ -41,6 +41,23 @@ class QuestionRequest(BaseModel):
 
 rag_system: Optional[NigerianConstitutionRAG] = None
 
+PERSONAL_ANSWERS = {
+    "who are you": "I am a Nigerian Constitution AI assistant.",
+    "what are you": "I am a Retrieval-Augmented Generation (RAG) system built to provide information from the Nigerian Constitution. I use advanced language models to understand your questions and retrieve relevant sections from the constitution to formulate my answers.",
+    "can you help me": "Yes, I can. I am here to help you with any questions you have about the Nigerian Constitution. Just ask the question!"
+}
+
+def find_predefined_answer(user_question: str) -> Optional[str]:
+    normalized_question = user_question.lower().strip()
+    
+    if any(phrase in normalized_question for phrase in ["who are you"]):
+        return PERSONAL_ANSWERS.get("who are you")
+    if any(phrase in normalized_question for phrase in ["what are you"]):
+        return PERSONAL_ANSWERS.get("what are you")
+    if "can you help me" in normalized_question:
+        return PERSONAL_ANSWERS.get("can you help me")
+        
+    return None
 @app.on_event("startup")
 async def startup_event():
     global rag_system
@@ -60,6 +77,25 @@ async def ask_question_stream(request: QuestionRequest):
 
     question = request.question
 
+    predefined_answer = find_predefined_answer(question)
+
+    if predefined_answer:
+        async def predefined_identity_stream():
+            for word in predefined_answer.split():
+                yield f"data: {json.dumps({'type': 'chunk', 'content': word + ' '})}\n\n"
+                await asyncio.sleep(0.05)
+            
+            yield f"data: {json.dumps({'type': 'end', 'sources': [], 'timestamp': datetime.now().isoformat()})}\n\n"
+        
+        return StreamingResponse(
+            predefined_identity_stream(),
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "Connection": "keep-alive",
+                "Transfer-Encoding": "chunked"
+            }
+        )
     async def generate_chunks():
         try:
             start_time = time.time()

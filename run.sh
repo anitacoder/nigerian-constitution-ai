@@ -1,7 +1,5 @@
 set -e
 
-cd "$(dirname "$0")"
-
 echo "Waiting for MongoDB to be ready..."
 echo "MongoDB is ready!"
 
@@ -46,7 +44,7 @@ if python "${python_check_script_path}"; then
     echo "Data already exists. Skipping data collection pipeline."
 else
     echo "No data found or error checking data. Attempting data collection."
-    python -c "from data_processing.main import run_data_collection_pipeline; run_data_collection_pipeline()"
+    PYTHONPATH=./backend python3 -c "from data_processing.main import run_data_collection_pipeline; run_data_collection_pipeline()"
     echo "Data collection pipeline finished."
 fi
 
@@ -54,7 +52,7 @@ rm "${python_check_script_path}"
 
 if [ ! -f "./data/faiss_index_constitution/index.faiss" ]; then
     echo "FAISS index not found. Running preprocessing pipeline..."
-    cd rag_pipeline
+    cd backend/rag_pipeline
     python document_preprocessing.py
     cd ..
 else
