@@ -40,7 +40,7 @@ except Exception as e:
 EOF
 
 echo "Checking if data already exists..."
-if python "${python_check_script_path}"; then
+if python3 "${python_check_script_path}"; then
     echo "Data already exists. Skipping data collection pipeline."
 else
     echo "No data found or error checking data. Attempting data collection."
