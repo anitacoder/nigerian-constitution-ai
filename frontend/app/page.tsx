@@ -1,20 +1,50 @@
   'use client';
   import { useState, useRef, useEffect } from 'react';
 
+  const intros = [
+    "Do you want to know more about the Nigerian Constitution?",
+    "Are you curious about your legal rights?",
+    "Looking to understand how the Nigerian government works?",
+    "Explore the laws that shape Nigeria.",
+  ]
+
   export default function Home() {
     const [question, setQuestion] = useState('');
     const [chat, setChat] = useState<{ role: 'user' | 'ai', content: string }[]>([]);
     const [loading, setLoading] = useState(false);
     const chatEndRef = useRef<HTMLDivElement>(null);
-
-    const scrollToBottom = () => {
-      chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    };
+    const [currentIntroIndex, setCurrentIntroIndex] = useState(0);
+    const [displayText, setDisplayText] = useState('');
+    const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => {
-      scrollToBottom();
+      chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [chat]);
+  
+    useEffect(() => {
+      const current = intros[currentIntroIndex];
+      let updatedText = isDeleting
+        ? current.substring(0, displayText.length - 1)
+        : current.substring(0, displayText.length + 1);
+  
+      const typingSpeed = isDeleting ? 50 : Math.floor(Math.random() * (150 - 80 + 1)) + 80;
+      let timer;
 
+      if (!isDeleting && updatedText === current) {
+        timer = setTimeout(() => setIsDeleting(true), 2000);
+      } else if (isDeleting && updatedText === '') {
+        timer = setTimeout(() => {
+          setIsDeleting(false);
+          setCurrentIntroIndex((prev) => (prev + 1) % intros.length);
+        },500);
+      } else {
+        timer = setTimeout(() => {
+          setDisplayText(updatedText);
+        }, typingSpeed);
+      }
+      return () => clearTimeout(timer);
+    }, [displayText, isDeleting, currentIntroIndex, intros]);
+  
     const handleSearch = async () => {
       if (!question.trim()) return;
       const currentQuestion = question;
@@ -85,8 +115,8 @@
           {showInitialScreen ? (
             <div className="flex flex-col flex-grow items-center justify-center text-center px-4">
               <h1 className="text-5xl font-extrabold mb-4 animate-fade-in">Hello, citizen!</h1>
-              <h2 className="text-xl text-gray-400 mb-8 max-w-xl animate-fade-in delay-200">
-                Do you want to know more about the Nigerian constitution?
+              <h2 className="text-xl text-gray-400 mb-8 max-w-xl min-h-[80px]">
+                <span>{displayText}<span className="border-r-2 border-gray-400 animate-pulse ml-1" /></span>
               </h2>
               <div className="flex gap-5">
               {["What is the Constitution?", "Who makes the laws?", "What are my rights?"].map((text, i) => (

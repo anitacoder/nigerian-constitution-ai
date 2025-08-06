@@ -50,19 +50,19 @@ fi
 
 rm "${python_check_script_path}"
 
-if [ ! -f "./data/faiss_index_constitution/index.faiss" ]; then
-    echo "FAISS index not found. Running preprocessing pipeline..."
-    cd backend/rag_pipeline
-    python document_preprocessing.py
-    cd ..
+FAISS_INDEX="./data/faiss_index_constitution/index.faiss"
+if [ ! -f "$FAISS_INDEX" ]; then
+    echo "FAISS index not found. Generating..."
+    PYTHONPATH=./backend python3 backend/rag_pipeline/document_preprocessing.py
+    echo "FAISS index successfully created at $FAISS_INDEX"
 else
-    echo "FAISS index exists. Skipping preprocessing."
+    echo "FAISS index already exists at $FAISS_INDEX"
 fi
 
 echo "Starting backend..."
-uvicorn rag_pipeline.api:app --host 0.0.0.0 --port 8000 --reload &
+PYTHONPATH=./backend uvicorn rag_pipeline.api:app --host 0.0.0.0 --port 8000 --reload &
 
 echo "Starting frontend..."
-cd ../frontend
+cd frontend
 npm install
 npm run dev
