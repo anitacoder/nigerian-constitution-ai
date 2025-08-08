@@ -28,19 +28,15 @@ def chunk():
     chunks = text_splitter.split_documents(documents)
     return chunks
 
-
 def store_data_in_chromadb():
     chunk_data = chunk()
-
-    embeddings = HuggingFaceEmbeddings(
-        model_name="sentence-transformers/all-MiniLM-L6-v2"
-    )
-
+    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
     vectorstore = Chroma.from_documents(
         documents=chunk_data,
         embedding=embeddings,
         persist_directory=CHROMA_DIR
     )
+    vectorstore.persist()
 
 if __name__ == "__main__":
     store_data_in_chromadb()
