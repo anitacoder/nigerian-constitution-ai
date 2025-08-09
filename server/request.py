@@ -27,7 +27,7 @@ def load_vectorstore():
 @app.post("/ask_question")
 def ask_question(request: QuestionRequest):
     try:
-        docs_with_scores = vectorstore.similarity_search_with_score(request.question, k=1)
+        docs_with_scores = vectorstore.similarity_search_with_score(request.question, k=6)
         results = []
         for doc, _ in docs_with_scores:
             content = doc.page_content.split('\n')[-1].strip()

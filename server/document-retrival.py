@@ -5,7 +5,7 @@ from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 
 FOLDER_DIR = os.path.abspath("server/data/constitution/")
-CHUNK_SIZE = 500
+CHUNK_SIZE = 100
 CHUNK_OVERLAP = 50
 CHROMA_DIR = os.path.abspath("chroma_db")
 
