@@ -1,4 +1,5 @@
 import os
+import re
 from langchain_community.document_loaders import TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
@@ -8,6 +9,7 @@ FOLDER_DIR = os.path.abspath("server/data/constitution/")
 CHUNK_SIZE = 100
 CHUNK_OVERLAP = 50
 CHROMA_DIR = os.path.abspath("chroma_db")
+EMBEDDINGS = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
 def load_files_text():
     all_texts = []
@@ -33,13 +35,32 @@ def chunk():
 
 def store_data_in_chromadb():
     chunk_data = chunk()
-    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+    embeddings = EMBEDDINGS
     vectorstore = Chroma.from_documents(
         documents=chunk_data,
         embedding=embeddings,
         persist_directory=CHROMA_DIR
     )
     vectorstore.persist()
+    return vectorstore 
+
+def load_vectorstore():
+    try:
+        return Chroma(
+            persist_directory=CHROMA_DIR,
+            embedding_function=EMBEDDINGS
+        )
+    except Exception as e:
+       return None
+
+def retrieve_context(vectorstore, query: str, k: int = 6) -> str:
+    docs_with_scores = vectorstore.similarity_search_with_score(query, k=k)
+    results = []
+    for doc, _ in docs_with_scores:
+        content = doc.page_content.split('\n')[-1].strip()
+        content = re.sub(r'^\d+\.\s*', '', content)
+        results.append(content)
+    return "\n".join(results) 
 
 if __name__ == "__main__":
     store_data_in_chromadb()
