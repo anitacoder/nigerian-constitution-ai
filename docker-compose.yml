@@ -20,5 +20,15 @@ services:
     volumes:
     - ollama_models:/root/.ollama/models
 
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - nigeria-constitution
+
 volumes:
   ollama_models:
