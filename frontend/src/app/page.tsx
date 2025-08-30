@@ -3,9 +3,21 @@ export default function Home() {
     <div className="main-sidebar">
       <aside className="sidebar">
         <h2 className="side-text">Naija Constitution Ai</h2>
-        <a href="#">New Chat</a>
-        <a href="#">History</a>
-        <a href="#">Settings</a>
+        
+        <a href="#" className="flex items-center gap-2">
+          <FiMessageSquare size={18} />
+          New Chat
+        </a>
+        
+        <a href="#" className="flex items-center gap-2">
+          <FiClock size={18} />
+          History
+        </a>
+        
+        <a href="#" className="flex items-center gap-2">
+          <FiSettings size={18} />
+          Settings
+        </a>
       </aside>
     <main className="main">
       <div className="center-content">
