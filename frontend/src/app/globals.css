@@ -24,11 +24,30 @@ body {
   gap: 1rem;
 }
 
+.sidebar-links {
+  margin-top: 70px;
+}
+
 .sidebar a {
   color: #d1d5db;
   text-decoration: none;
   font-weight: 500;
   transition: color 0.2s ease;
+  margin-top: 20px;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #d1d5db;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.sidebar-link:hover {
+  color: #3b82f6;
 }
 
 .sidebar a:hover {
@@ -116,4 +135,13 @@ body {
 
 .search-input:focus {
   box-shadow: 0 0 0 2px #3b82f6;
+}
+
+.send-icon {
+  margin-top: -37px;
+  margin-left: 620px;
+}
+
+.send-icon:hover {
+  cursor: pointer;
 }
