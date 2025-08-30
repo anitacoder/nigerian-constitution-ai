@@ -1,3 +1,4 @@
+import { FiMessageSquare, FiClock, FiSettings } from "react-icons/fi";
 export default function Home() {
   return (
     <div className="main-sidebar">
