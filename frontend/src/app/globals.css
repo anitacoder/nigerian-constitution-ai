@@ -22,6 +22,8 @@ body {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  position: fixed;
+  height: 8800px;
 }
 
 .sidebar-links {
@@ -88,6 +90,7 @@ body {
   height: 120px;
   animation: rotateLogo 6s linear infinite;
   margin-bottom: 1rem;
+  margin-left: 190px;
 }
 
 @keyframes rotateLogo {
@@ -104,6 +107,7 @@ body {
   font-weight: bold;
   text-align: center;
   margin-top: 1rem;
+  margin-left: 190px;
 }
 
 @media (min-width: 640px) {
@@ -115,7 +119,11 @@ body {
 .search-container {
   width: 100%;
   max-width: 36rem;
-  padding-bottom: 2rem;
+  position: fixed;
+  bottom: 2rem;
+  left: 59%;
+  transform: translateX(-50%);
+  
 }
 
 .search-input {
@@ -144,4 +152,35 @@ body {
 
 .send-icon:hover {
   cursor: pointer;
+}
+
+.chat-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem; 
+}
+
+.chat-message {
+  padding: 0.75rem; 
+  border-radius: 0.5rem; 
+  max-width: 28rem; 
+  word-wrap: break-word;
+}
+
+.user-message {
+  background-color: transparent; 
+  color: white;
+  align-self: flex-end;
+  margin-left: auto;
+  width: 1990px;
+  border: 1px solid black;
+}
+
+.bot-message {
+  background-color: #e5e7eb; 
+  color: black;
+  align-self: flex-start;
 }
