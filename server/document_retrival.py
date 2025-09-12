@@ -36,6 +36,7 @@ def chunk():
 def store_data_in_chromadb():
     chunk_data = chunk()
     embeddings = EMBEDDINGS
+    embeddings = EMBEDDINGS,
     vectorstore = Chroma.from_documents(
         documents=chunk_data,
         embedding=embeddings,
@@ -61,6 +62,7 @@ def retrieve_context(vectorstore, query: str, k: int = 6) -> str:
         content = re.sub(r'^\d+\.\s*', '', content)
         results.append(content)
     return "\n".join(results) 
+    return results
 
 if __name__ == "__main__":
     store_data_in_chromadb()

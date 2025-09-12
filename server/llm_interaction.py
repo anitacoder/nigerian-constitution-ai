@@ -5,8 +5,8 @@ from langchain_ollama import OllamaLLM
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
 
 def query_text(question: str, context: str) -> str:
-    llm = OllamaLLM(model="llama3.2:1b",base_url=OLLAMA_URL)
-    prompt_response = """I am an intelligent expert on the Nigerian Constitution. 
+    llm = Ollama(model="llama3.2:1b")
+    prompt_response = """ I am an intelligent expert on nigeria constitution. 
     Context:
     {context}
     Question:
@@ -18,3 +18,8 @@ def query_text(question: str, context: str) -> str:
 
     result = chain.invoke({"context": context, "question": question})
     return str(result)
+    Answer:
+    """
+    prompt = PromptTemplate(template=prompt_response, input_variables=["context","question"])
+    chain = LLMChain(prompt=prompt, llm=llm)
+    return chain.run({"context":context, "question": question})
