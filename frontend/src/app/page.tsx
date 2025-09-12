@@ -17,6 +17,7 @@ export default function Home() {
     if (!msgToSend.trim()) return;
 
     setChat((prev) => [...prev, { role: "user", text: msgToSend }]);
+    setMessage("")
     setLoading(true);
 
     try {
@@ -49,12 +50,12 @@ export default function Home() {
   };
 
   const handleSuggestedQuestion = (question: string) => {
+    setMessage("");
     sendMessage(question);
   }
 
   return (
     <div className="main-sidebar">
-        <h2 className="side-text">Naija Constitution Ai</h2>
       <main className="main flex flex-col">
         {chat.length === 0 ? (
           <div className="center-content">

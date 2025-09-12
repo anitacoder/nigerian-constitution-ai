@@ -10,13 +10,6 @@ body {
   height: 100vh;
 }
 
-
-.side-text {
-  font-weight: bold;
-  font-size: 1.125rem;
-  margin-bottom: 1rem;
-}
-
 .main {
   flex: 1; 
   display: flex;
@@ -137,29 +130,28 @@ body {
 
 .chat-container {
   flex: 1;
-  padding: 1rem 2rem;
+  padding: 1rem 0;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  overflow-y: auto;
   scroll-behavior: smooth;
+  align-items: center;
 }
 
-/* 
 .chat-message {
-  padding: 0.75rem; 
-  border-radius: 0.5rem; 
-  max-width: 28rem; 
+  width: 100%;
+  max-width: 60px; 
   word-wrap: break-word;
-} */
+}
 
 .user-message {
-  align-self: flex-end;
-  color: #fff;
+  background: transparent;
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 15px;
   font-size: 0.95rem;
   max-width: 90%;
-  text-align: right;
-  white-space: nowrap;
+  margin-left: 1190px;
 }
 
 .response {
@@ -171,18 +163,21 @@ body {
 
 .bot-message {
   align-self: flex-start;
-  background: rgba(255, 255, 255, 0.04);
-  padding: 1rem;
-  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.08);
+  color: #f3f4f6;
+  padding: 0.75rem 1rem;
+  border-radius: 1rem 1rem 1rem 0;
   font-size: 0.95rem;
   line-height: 1.5;
-  max-width: 80%;
-  white-space: pre-wrap;
+  max-width: 39%;
+  margin-left: 320px;
 }
 
 .typing-indicator {
   align-self: flex-start;
   font-style: italic;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: #9ca3af;
+  max-width: 600px;
+  margin-left: 320px;
 }
