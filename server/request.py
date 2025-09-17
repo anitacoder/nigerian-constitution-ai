@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from llm_interaction import query_text
 from document_retrival import load_vectorstore, retrieve_context
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 
 app = FastAPI()
 
@@ -29,10 +30,15 @@ def ask_question(request: QuestionRequest):
         raise HTTPException(status_code=500, detail="Vectorstore not available")
     try:
         context = retrieve_context(vectorstore, request.question)
-        answer = query_text(request.question, context)
-        return {
-            "question": request.question,
-            "results": answer
-        }
+        def generate():
+            for chunk in query_text(request.question, context):
+                yield chunk + "\n"
+        
+        return StreamingResponse(generate(), media_type="text/plain")
+        # answer = query_text(request.question, context)
+        # return {
+        #     "question": request.question,
+        #     "results": answer
+        # }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

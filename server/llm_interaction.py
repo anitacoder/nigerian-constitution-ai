@@ -17,5 +17,5 @@ def query_text(question: str, context: str) -> str:
     prompt = PromptTemplate(template=prompt_response, input_variables=["context", "question"])
     chain = prompt | llm
 
-    result = chain.invoke({"context": context, "question": question})
-    return str(result)
+    for chunk in chain.stream({"context": context, "question": question}):
+        yield chunk

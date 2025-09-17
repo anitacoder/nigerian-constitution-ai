@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
-import { FiMessageSquare, FiClock, FiSettings, FiSend } from "react-icons/fi";
+import { FiMessageSquare,FiPlus,FiSend } from "react-icons/fi";
+import NewChatPage from "./newchat/page";
 
 type ChatMessage = {
   role: "user" | "bot";
@@ -29,9 +30,26 @@ export default function Home() {
 
       if (!res.ok) throw new Error("Failed to get response");
 
-      const data: { results: string } = await res.json();
+      const reader = res.body?.getReader();
+      const decoder = new TextDecoder("utf-8");
+      let reply = "";
 
-      setChat((prev) => [...prev, { role: "bot", text: data.results }]);
+      while (true) {
+        const { done, value } = await reader!.read();
+        if (done) break;
+        if (loading) setLoading(false)
+        reply += decoder.decode(value, { stream: true });
+
+        setChat((prev) => {
+          const updated = [...prev];
+          if (updated[updated.length - 1]?.role === "bot") {
+            updated[updated.length - 1].text = reply;
+          } else {
+            updated.push({ role: "bot", text: reply });
+          }
+          return updated;
+        });
+      }
     } catch (err: unknown) {
       const errorMsg =
         err instanceof Error ? err.message : "An unknown error occurred";
@@ -90,13 +108,19 @@ export default function Home() {
 
           {loading && <div className="typing-indicator">Typing...</div>}
     </div>
-
         )}
-
         <div className="search-container">
-          <input type="text" placeholder="Ask me anything..."className="search-input w-full pr-10 pl-3 py-2 border rounded-lg"value={message} onChange={(e) => setMessage(e.target.value)} onKeyDown={handleKeyDown}/>
-          <FiSend size={20} className="send-icon" onClick={() => sendMessage()} />
-        </div>
+          <input type="text" placeholder="Ask me anything..." className="search-input" value={message} onChange={(e) => setMessage(e.target.value)} onKeyDown={handleKeyDown}/>
+        <div className="search-actions">
+          <button className="icon-btn new-chat-btn" onClick={NewChatPage} title="Start new chat">
+            <FiPlus size={18} />
+          </button>
+          <button className="icon-btn send-btn" onClick={() => sendMessage()}>
+            <FiSend size={18} />
+          </button>
+      </div>
+    </div>
+
       </main>
     </div>
   );
