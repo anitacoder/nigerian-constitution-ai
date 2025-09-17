@@ -1,14 +1,15 @@
 "use client";
 import { useState } from "react";
 import { FiMessageSquare,FiPlus,FiSend } from "react-icons/fi";
-import { useRouter } from "next/navigation"; 
+import { useRouter, useParams} from "next/navigation"; 
 
 type ChatMessage = {
   role: "user" | "bot";
   text: string;
 };
 
-export default function Home() {
+export default function NewChatPage() {
+  const { id } = useParams();
   const [message, setMessage] = useState<string>("");
   const [chat, setChat] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -114,8 +115,8 @@ export default function Home() {
           <input type="text" placeholder="Ask me anything..." className="search-input" value={message} onChange={(e) => setMessage(e.target.value)} onKeyDown={handleKeyDown}/>
         <div className="search-actions">
         <button className="icon-btn new-chat-btn" onClick={() => router.push(`/chat/${Date.now()}`)} title="Start new chat">
-              <FiPlus size={18} />
-            </button>
+          <FiPlus size={18} />
+        </button>
           <button className="icon-btn send-btn" onClick={() => sendMessage()}>
             <FiSend size={18} />
           </button>

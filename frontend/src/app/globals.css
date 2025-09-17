@@ -5,9 +5,9 @@ body {
   color: white;
   margin: 0;
   font-family: "Inter", sans-serif;
-  display: flex;
-  flex-direction: column;
   height: 100vh;
+  overflow-x: hidden;
+
 }
 
 .main {
