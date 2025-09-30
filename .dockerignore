@@ -1,0 +1,8 @@
+/chroma_db
+node_modules
+npm-debug.log
+.next
+Dockerfile
+.dockerignore
+.git
+.gitignore
