@@ -35,10 +35,5 @@ def ask_question(request: QuestionRequest):
                 yield chunk + "\n"
         
         return StreamingResponse(generate(), media_type="text/plain")
-        # answer = query_text(request.question, context)
-        # return {
-        #     "question": request.question,
-        #     "results": answer
-        # }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

@@ -91,12 +91,13 @@ body {
 }
 
 .search-container {
-  position: relative;
   display: flex;
   align-items: center;
   width: 100%;
   max-width: 750px;
   margin: 0rem 20px;
+  position: relative;   
+
 }
 
 .search-input {
@@ -206,4 +207,17 @@ body {
   color: #9ca3af;
   max-width: 600px;
   margin-left: 320px;
+}
+
+
+@media (max-width: 418px) {
+  .greeting {
+    white-space: nowrap;
+    margin-left: 20px;
+  }
+
+  .question-box {
+   font-size: 0.51rem;
+
+  }
 }
